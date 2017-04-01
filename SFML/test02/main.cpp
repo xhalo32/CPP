@@ -4,11 +4,12 @@
 #include <sstream>
 #include <iostream>
 using namespace sf;
+using namespace std;
 
 
 
-const int M = 10, N = 10;
-const int size = 32;
+const int M = 6, N = 6;
+const int size = 64;
 const int width = M*size, height = N*size;
 const int size_at_start = 5;
 const int max_snake = M*N;
@@ -31,13 +32,13 @@ RectangleShape draw_rect( int pos[ 2 ], int size[ 2 ], int color[ 3 ] )
 	return rect;
 }
 
-Text msg ( Font f, std::string message, int x, int y, int fontsize, int R, int G, int B, bool center )
+Text msg ( Font f, string message, int x, int y, int fontsize, int R, int G, int B, bool center )
 { 
 	Text text;
 	text.setFont(f);
 	text.setString( message );
 	text.setCharacterSize( fontsize );
-	text.setColor(Color( R,G,B ));
+	text.setFillColor(Color( R,G,B ));
 
 	FloatRect rect = text.getLocalBounds();
 	if (center)
@@ -58,14 +59,14 @@ Text msg ( Font f, std::string message, int x, int y, int fontsize, int R, int G
 
 
 
-std::string Convert (float number){
-    std::ostringstream buff;
+string Convert (float number){
+    ostringstream buff;
     buff<<number;
     return buff.str();   
 }
 
-std::string Convert (int number){
-    std::ostringstream buff;
+string Convert (int number){
+    ostringstream buff;
     buff<<number;
     return buff.str();   
 }
@@ -150,7 +151,7 @@ int main(  )
 
 			/*
 			if ( e.type == Event::TextEntered )
-				std::cout << e.text.unicode << std::endl;
+				cout << e.text.unicode << endl;
 			*/
 			if ( e.type == Event::KeyPressed )
 				if ( ( e.key.code == Keyboard::Up ) 	&& 	!( direction == 2 ) ) direction = 0;
