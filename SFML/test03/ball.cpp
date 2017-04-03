@@ -1,47 +1,78 @@
 #include "ball.h"
+#include <cmath> //for fmod
 
 Ball::Ball(RenderWindow * rwp, int index): windowp(rwp)
 {
-	x = windowp->getSize().x / 2;
-	y = windowp->getSize().y / 2;
+	x = windowp->getSize().x / 2 + rand() % (4*radius);
+	y = windowp->getSize().y / 2 + rand() % (4*radius);
 
-	angle = rand() % 360;
-	acctime = rand() % 60 + 60;
-
-	while (((angle > 45) && (angle < 90+45)) ||
-		((angle > 180+45) && (angle < 180+90+45)))
-	{
-		angle = rand() % 360;
-	}
+	angle = fmod(rand(), 360.0);
+	acctime = rand() % 100 + 20;
 
 	for (int i = 0; i < trailsize; ++i)
 	{
-		trail[i][0] = -radius;
-		trail[i][1] = -radius;
+		trail[i].x = -radius;
+		trail[i].y = -radius;
 	}
 
 	vx = speed * cos(angle * M_PI / 180.);
 	vy = speed * sin(angle * M_PI / 180.);
 }
-void Ball::update(Paddle * padlist[], int numpad)
+void Ball::update(Paddle * padlist[], int numpad,
+				Ball * balllist[], int numballs)
 {
+	if (destroyed) return;
+
 	timer += 1;
-	angle %= 360;
+	angle = fmod(angle, 360.0);
 
 	//test for borders
-	if (y > windowp->getSize().y - radius) 	angle += -2*angle;
-	if (y < radius) 						angle += -2*angle;
-
-	if (x < radius)
+	if (y > windowp->getSize().y - radius)
 	{
-		padlist[1]->addPoint();
-		disabled = true;
+		angle += -2*angle;
+		y = windowp->getSize().y - radius;
+
+		if (abs(vx) / speed <.5)
+		{
+			angle += 30 * vx/abs(vx);
+		}
+	}
+	else if (y < radius)
+	{
+		angle += -2*angle;
+	 	y = radius;
+
+		if (abs(vx) / speed <.5)
+		{
+			angle += - 30 * vx/abs(vx);
+		}
 	}
 
-	if (x > windowp->getSize().x)
+	if (!(disabled))
 	{
-		padlist[0]->addPoint();
-		disabled = true;
+		if (x < radius)
+		{
+			padlist[1]->addPoint();
+			disabled = true;
+		}
+
+		else if (x > windowp->getSize().x - radius)
+		{
+			padlist[0]->addPoint();
+			disabled = true;
+		}
+	}
+	else
+	{
+		if (x < radius - trailsize*trailfreq*speed - radius)
+		{
+			destroyed = true;
+		}
+
+		else if (x > windowp->getSize().x + trailsize*trailfreq*speed)
+		{
+			destroyed = true;
+		}
 	}
 
 	//test for paddles
@@ -56,8 +87,33 @@ void Ball::update(Paddle * padlist[], int numpad)
 		{
 			float vym = (speed * p.getSide() - speed * sin(angle*M_PI/180.));
 			angle += 180 - 2*angle - vym * p.getVy();
-			x = p.getX()+p.getWidth() * (-p.getSide() + 1) / 2;
+			x = p.getX()+p.getWidth() * (1 - p.getSide()) / 2;
+
+			lastPad = padlist[i];
 		}
+	}
+
+	//test for other balls
+	for (int i = 0; i < numballs; i++)
+	{
+		Ball * b = balllist[i];
+
+		if (!(b == this))
+			if ((x < (int) b->getX() + b->getRadius()) &&
+				(x > (int) b->getX() - b->getRadius()) &&
+				(y < (int) b->getY() + b->getRadius()) &&
+				(y > (int) b->getY() - b->getRadius()))
+			{
+				//angle += 180 - 2*b->getAngle();
+
+				int a1 = (int) this->angle;
+				int a2 = b->getAngle();
+
+				int halfa = a2 + (360-a2)/2 + a1/2;
+
+				this->angle = 2*halfa - a1;
+				b->setAngle(2*halfa - a2);
+			}
 	}
 
 	if (speed < maxspeed) speed += maxspeed / acctime;
@@ -67,20 +123,24 @@ void Ball::update(Paddle * padlist[], int numpad)
 
 	if (timer % trailfreq == 0)
 	{
-		int newtrail[trailsize][2];
+		struct coord
+		{
+			int x;
+			int y;
+		} newtrail[trailsize];
 
-		newtrail[0][0] = x;
-		newtrail[0][1] = y;
+		newtrail[0].x = x;
+		newtrail[0].y = y;
 
 		for (int i = 0; i < trailsize-1; i++)
 		{
-			newtrail[i+1][0] = trail[i][0];
-			newtrail[i+1][1] = trail[i][1];
+			newtrail[i+1].x = trail[i].x;
+			newtrail[i+1].y = trail[i].y;
 		}
 		for (int i = 0; i < trailsize; ++i)
 		{
-			trail[i][0] = newtrail[i][0];
-			trail[i][1] = newtrail[i][1];
+			trail[i].x = newtrail[i].x;
+			trail[i].y = newtrail[i].y;
 		}
 	}
 
@@ -89,11 +149,13 @@ void Ball::update(Paddle * padlist[], int numpad)
 }
 void Ball::draw()
 {
+	if (destroyed) return;
+
 	int r;
 	int pos[2] = {0, 0};
 
 	//trail
-	for (int i = 0; i < trailsize; i++)
+	for (int i = trailsize-1; i >= 0; i--)
 	{
 		RgbColor rgb1;
 		rgb1.r = color[0];
@@ -110,8 +172,8 @@ void Ball::draw()
 		rgb[1] = rgb2.g;
 		rgb[2] = rgb2.b;
 
-		pos[0] = trail[i][0] - radius * ((trailsize-i) / (float)trailsize);
-		pos[1] = trail[i][1] - radius * ((trailsize-i) / (float)trailsize);
+		pos[0] = trail[i].x - radius * ((trailsize-i) / (float)trailsize);
+		pos[1] = trail[i].y - radius * ((trailsize-i) / (float)trailsize);
 		r = radius * ((trailsize-i) / (float)trailsize);
 		windowp->draw(draw_circle(pos, r, rgb));
 	}
@@ -137,4 +199,25 @@ void Ball::setColorHue(int hue)
 	{
 		color[i] = col[i];
 	}
+}
+
+float Ball::getX()
+{
+	return x;
+}
+float Ball::getY()
+{
+	return y;
+}
+float Ball::getAngle()
+{
+	return angle;
+}
+void Ball::setAngle(int ang)
+{
+	angle = ang;
+}
+int Ball::getRadius()
+{
+	return radius;
 }

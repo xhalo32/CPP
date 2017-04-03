@@ -26,9 +26,10 @@ Paddle pad1(-1, windowp);
 Paddle pad2(1, windowp);
 
 const int numpad = 2;
-const int numballs = 2;
+const int numballs = 300;
 
-Paddle * padlist[] = {&pad1, &pad2};
+
+Paddle * padlist[2] = {&pad1, &pad2};
 Ball * balllist[numballs];
 
 
@@ -91,6 +92,14 @@ void generate_balls()
 	}
 }
 
+void reset_points()
+{
+	for (int i = 0; i < numpad; i++)
+	{
+		padlist[i]->resetPoints();
+	}
+}
+
 void loop_events(Event e)
 {
 	if (e.type == Event::Closed)
@@ -99,7 +108,9 @@ void loop_events(Event e)
 	if (e.type == Event::KeyPressed)
 	{
 		if (e.key.code == Keyboard::Key::R) generate_balls();
+		if (e.key.code == Keyboard::Key::T) reset_points();
 	}
+
 
 	for (int i = 0; i < numpad; i++)
 	{
@@ -114,11 +125,9 @@ void loop()
 	{
 		padlist[i]->update();
 	}
-
 	for (int i = 0; i < numballs; i++)
 	{
-		if (!(balllist[i]->disabled))
-			balllist[i]->update(padlist, numpad);
+		balllist[i]->update(padlist, numpad, balllist, numballs);
 	}
 }
 
@@ -126,11 +135,10 @@ void draw()
 {
 	for (int i = 0; i < numballs; i++)
 	{
-		if (!(balllist[i]->disabled))
-			balllist[i]->draw();
+		balllist[i]->draw();
 	}
 	for (int i = 0; i < numpad; i++)
 	{
-		padlist[i]->draw();
+		padlist[i]->draw(padlist);
 	}
 }

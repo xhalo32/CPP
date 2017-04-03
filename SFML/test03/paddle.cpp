@@ -16,7 +16,11 @@ Paddle::Paddle(int side, RenderWindow * wp) : side(side), windowp(wp)
 		x = windowp->getSize().x-20-width;
 	}
 
-	this->font.loadFromFile("Ubuntu-L.ttf");	
+	this->font.loadFromFile("Ubuntu-L.ttf");
+	
+	color[0] = 100;
+	color[1] = 100;
+	color[2] = 100;
 
 }
 void Paddle::update()
@@ -55,22 +59,36 @@ void Paddle::loop_events(Event e)
 			vvy = 0;
 	}
 }
-void Paddle::draw()
+void Paddle::draw(Paddle * padlist[2])
 {
-	int pos[] = { (int)x, (int)y },
-		wh[] = { width, height },
-		color[] = { 100,100,100 };
+	//move the paddle to move the center of rotation
+	double rad = sqrt(pow(width, 2) + pow(height, 2)) / 2.0;
+	double stupidangle = atan(height/width);
+
+	int pos[] = { 	(int)x + side * (int)(rad*cos(vy*M_PI/180. + stupidangle)), 
+					(int)y },
+		wh[] = { width, height };
 			
-	windowp->draw(draw_rect(pos, wh, color));
+	//windowp->draw(draw_rect(pos, wh, color));
+
+	windowp->draw(draw_rect_angle(pos, wh, color, (int) vy * -side));
+
+	int winner = 0;
+	if (padlist[(-side+1)/2]->points < this->points) winner = 1;
+	if (padlist[(-side+1)/2]->points > this->points) winner = -1;
 
 	windowp->draw(msg(font, to_string(points),
-		windowp->getSize().x / 2.0 + side * ( windowp->getSize().x / 5.0 ), 0,
-		32, 60, 60, 60, false));
+		windowp->getSize().x / 2.0 + side * ( windowp->getSize().x / 5.0 ), 10,
+		32, 100 - 100*winner, 100 + 100*winner, 100, true));
 }
 
 void Paddle::addPoint()
 {
 	points++;
+}
+void Paddle::resetPoints()
+{
+	points = 0;
 }
 int Paddle::getWidth()
 {

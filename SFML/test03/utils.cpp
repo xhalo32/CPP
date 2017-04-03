@@ -8,6 +8,17 @@ RectangleShape draw_rect(int pos[2], int size[2], int color[3])
 	return rect;
 }
 
+RectangleShape draw_rect_angle(int pos[2], int size[2], int color[3], int angle)
+{
+	RectangleShape rect;
+	rect.setSize(Vector2f(size[0],size[1]));
+	rect.setFillColor(Color(color[0],color[1],color[2]));
+	rect.setPosition(pos[0],pos[1]);
+	rect.rotate(angle);
+
+	return rect;
+}
+
 CircleShape draw_circle(int pos[2],int radius,int color[3] )
 { 
 	CircleShape circle;

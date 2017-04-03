@@ -1,24 +1,42 @@
 class Ball
 {
-	public:
-		Ball(RenderWindow *, int);
-		void update(Paddle * [], int);
-		void draw();
+public:
+	Ball(RenderWindow *, int);
+	void update(Paddle * [], int, Ball *[], int);
+	void draw();
 
-		void setColorHue(int);
+	void setColorHue(int);
 
-		bool disabled = false;
+	float getX();
+	float getY();
+	float getAngle();
 
-	protected:
-		float x, y, vx, vy,
-			speed = 0, maxspeed = 6, acctime;
+	void setAngle(int);
 
-		int angle, radius = 8, trailsize = 10, 
-			trailfreq = 4, timer = 0;
+	int getRadius();
+
+	bool disabled = false;
+	bool destroyed = false;
+
+protected:
+	float x, y, vx, vy, angle,
+		speed = 0, maxspeed = 6, acctime;
+
+	int radius = 10,
+		trailfreq = 3, timer = 0;
+
+	const static int trailsize = 10;
+
+	struct coord
+	{
+		int x;
+		int y;
+	} trail[trailsize];
+
+	Paddle * lastPad;
 
 
-		int color[3];
-		int trail[10][2];
+	int color[3];
 
-		RenderWindow * windowp;
+	RenderWindow * windowp;
 };
