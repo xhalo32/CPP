@@ -22,7 +22,7 @@ protected:
 	float x, y, vx, vy, angle,
 		speed = 0, maxspeed = 6, acctime;
 
-	int radius = 10,
+	int radius = 8,
 		trailfreq = 3, timer = 0;
 
 	const static int trailsize = 10;

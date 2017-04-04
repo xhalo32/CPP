@@ -26,7 +26,7 @@ Paddle pad1(-1, windowp);
 Paddle pad2(1, windowp);
 
 const int numpad = 2;
-const int numballs = 300;
+const int numballs = 3;
 
 
 Paddle * padlist[2] = {&pad1, &pad2};
@@ -48,6 +48,14 @@ int main()
 
 	float timer = 0, delay = 1.0 / 60;
 	Clock clock;
+
+	/*
+	Shader * shader = new Shader;
+	shader->loadFromFile("shader.frag", Shader::Fragment);
+	shader->setUniform("frag_ScreenResolution", Vector2f(width, height));
+	shader->setUniform("frag_LightAttenuation", (float) 100);
+	RenderStates states; states.shader = shader;
+	*/
 	
 	while (window.isOpen())
 	{

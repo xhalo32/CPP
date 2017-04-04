@@ -175,6 +175,8 @@ void Ball::draw()
 		pos[0] = trail[i].x - radius * ((trailsize-i) / (float)trailsize);
 		pos[1] = trail[i].y - radius * ((trailsize-i) / (float)trailsize);
 		r = radius * ((trailsize-i) / (float)trailsize);
+
+
 		windowp->draw(draw_circle(pos, r, rgb));
 	}
 
@@ -202,22 +204,12 @@ void Ball::setColorHue(int hue)
 }
 
 float Ball::getX()
-{
-	return x;
-}
+{return x;}
 float Ball::getY()
-{
-	return y;
-}
+{return y;}
 float Ball::getAngle()
-{
-	return angle;
-}
+{return angle;}
 void Ball::setAngle(int ang)
-{
-	angle = ang;
-}
+{angle = ang;}
 int Ball::getRadius()
-{
-	return radius;
-}
+{return radius;}

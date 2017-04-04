@@ -1,5 +1,5 @@
 RectangleShape draw_rect(int pos[2], int size[2], int color[3])
-{ 
+{
 	RectangleShape rect;
 	rect.setSize(Vector2f(size[0],size[1]));
 	rect.setFillColor(Color(color[0],color[1],color[2]));
@@ -7,7 +7,6 @@ RectangleShape draw_rect(int pos[2], int size[2], int color[3])
 
 	return rect;
 }
-
 RectangleShape draw_rect_angle(int pos[2], int size[2], int color[3], int angle)
 {
 	RectangleShape rect;
@@ -18,9 +17,8 @@ RectangleShape draw_rect_angle(int pos[2], int size[2], int color[3], int angle)
 
 	return rect;
 }
-
 CircleShape draw_circle(int pos[2],int radius,int color[3] )
-{ 
+{
 	CircleShape circle;
 	circle.setRadius(radius);
 	circle.setFillColor(Color(color[0],color[1],color[2]));
@@ -28,10 +26,9 @@ CircleShape draw_circle(int pos[2],int radius,int color[3] )
 
 	return circle;
 }
-
 Text msg (Font f, string message,
 	int x, int y, int fontsize, int R, int G, int B, bool center)
-{ 
+{
 	Text text;
 	text.setFont(f);
 	text.setString(message);

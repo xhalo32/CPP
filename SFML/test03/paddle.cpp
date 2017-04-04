@@ -78,43 +78,25 @@ void Paddle::draw(Paddle * padlist[2])
 	if (padlist[(-side+1)/2]->points > this->points) winner = -1;
 
 	windowp->draw(msg(font, to_string(points),
-		windowp->getSize().x / 2.0 + side * ( windowp->getSize().x / 5.0 ), 10,
-		32, 100 - 100*winner, 100 + 100*winner, 100, true));
+		windowp->getSize().x / 2.0 + side * ( windowp->getSize().x / 5.0 ),
+		10, 50 + 8*winner, 100 - 100*winner, 100 + 100*winner, 100, true));
 }
 
 void Paddle::addPoint()
-{
-	points++;
-}
+{points++;}
 void Paddle::resetPoints()
-{
-	points = 0;
-}
+{points = 0;}
 int Paddle::getWidth()
-{
-	return this->width;
-}
+{return this->width;}
 int Paddle::getX()
-{
-	return this->x;
-}
+{return this->x;}
 int Paddle::getHeight()
-{
-	return this->height;
-}
+{return this->height;}
 int Paddle::getY()
-{
-	return this->y;
-}
+{return this->y;}
 int Paddle::getSide()
-{
-	return this->side;
-}
+{return this->side;}
 float Paddle::getVy()
-{
-	return this->vy;
-}
+{return this->vy;}
 float Paddle::getMaxspeed()
-{
-	return this->maxspeed;
-}
+{return this->maxspeed;}
