@@ -1,6 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <time.h>
 using namespace sf;
+#include <iostream>
+using namespace std;
 
 const int M = 25;
 const int N = 40;
@@ -50,8 +52,10 @@ int main()
 	sGameover.setPosition(100,100);
 	sEnemy.setOrigin(20,20);
 
-	int enemyCount = 4;
-    Enemy a[10];
+	int enemyCount = 8;
+    Enemy a[8];
+
+  cout<<sizeof(enemyCount)<<endl;
 
 	bool Game=true;
 	int x=0, y=0, dx=0, dy=0;

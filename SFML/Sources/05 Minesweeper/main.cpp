@@ -2,6 +2,16 @@
 #include <time.h>
 using namespace sf;
 
+void genMines(int g[12][12], int sg[12][12]){
+  for (int i=1;i<=10;i++)
+     for (int j=1;j<=10;j++)
+      {
+        sg[i][j]=10;
+        if (rand()%5==0)  g[i][j]=9;
+        else g[i][j]=0;
+      }
+}
+
 int main()
 {
     srand(time(0));
@@ -16,13 +26,7 @@ int main()
     t.loadFromFile("images/tiles.jpg");
     Sprite s(t);
 
-    for (int i=1;i<=10;i++)
-     for (int j=1;j<=10;j++)
-      {
-        sgrid[i][j]=10;
-        if (rand()%5==0)  grid[i][j]=9;
-        else grid[i][j]=0;
-      }
+    genMines(grid, sgrid);
 
     for (int i=1;i<=10;i++)
      for (int j=1;j<=10;j++)
@@ -39,6 +43,15 @@ int main()
         if (grid[i+1][j-1]==9) n++;
         grid[i][j]=n;
       }
+
+      Vector2i pos = Mouse::getPosition(app);
+        int x = pos.x/w;
+        int y = pos.y/w;
+
+      Event e;
+      if (e.type == Event::MouseButtonPressed)
+              if (e.key.code == Mouse::Left && grid[x][y] == 9) while(grid[x][y] == 9) {genMines(grid, sgrid)};
+
 
     while (app.isOpen())
     {

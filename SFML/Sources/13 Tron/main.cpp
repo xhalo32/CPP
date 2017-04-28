@@ -5,86 +5,115 @@ using namespace sf;
 const int W=600;
 const int H=480;
 int speed = 4;
-bool field[W][H]={0};
+bool field[W][H];
 
 struct player
 { int x,y,dir;
-  Color color;
-  player(Color c)
-  {
-    x=rand() % W;
-    y=rand() % H;
-    color=c;
-    dir=rand() % 4;
-  }
-  void tick()
-  {
-    if (dir==0) y+=1;
-    if (dir==1) x-=1;
-    if (dir==2) x+=1;
-    if (dir==3) y-=1;
+	Color color;
+	player(Color c)
+	{
+		color=c;
+		reset();
+	}
+	void tick()
+	{
+		if (dir==0) y+=1;
+		if (dir==1) x-=1;
+		if (dir==2) x+=1;
+		if (dir==3) y-=1;
 
-	if (x>=W) x=0;  if (x<0) x=W-1;
-    if (y>=H) y=0;  if (y<0) y=H-1;
-  }
-
-  Vector3f getColor()
-  {return Vector3f(color.r,color.g,color.b);}
+		if (x>=W) x=0;  if (x<0) x=W-1;
+		if (y>=H) y=0;  if (y<0) y=H-1;
+	}
+	void reset()
+	{
+		x=rand() % W;
+		y=rand() % H;
+		dir=rand() % 4;
+	}
+	Vector3f getColor()
+	{return Vector3f(color.r,color.g,color.b);}
 };
+
+
+void nullfield(bool f[W][H], int w, int h)
+{
+	for (int i = 0; i < w; ++i)
+	{
+		for (int j = 0; j < h; ++j)
+		{
+			f[i][j] = false;
+		}
+	}
+}
 
 int main()
 {
 	srand(time(0));
 
-    RenderWindow window(VideoMode(W, H), "The Tron Game!");
-    window.setFramerateLimit(40);
+	RenderWindow window(VideoMode(W, H), "The Tron Game!");
+	window.setFramerateLimit(40);
 
 	Texture texture;
 	texture.loadFromFile("background.jpg");
 	Sprite sBackground(texture);
 
-    player p1(Color::Red), p2(Color::Blue); 
+	player p1(Color::Red), p2(Color::Blue); 
 
 	Sprite sprite;
 	RenderTexture t;
 	t.create(W, H);
 	t.setSmooth(true);
 	sprite.setTexture(t.getTexture());
-    t.clear();  t.draw(sBackground);
+	t.clear();  t.draw(sBackground);
 
-    Font font; font.loadFromFile("Ubuntu-L.ttf"); 
-    Text text("YOU WIN!", font, 35);
-    text.setPosition(W/2-80, 20);
+	Font font; font.loadFromFile("Ubuntu-L.ttf"); 
+	Text text("YOU WIN!", font, 35);
+	text.setPosition(W/2-80, 20);
 
-    Shader * shader = new Shader;
-    shader->loadFromFile("shader.frag", Shader::Fragment);
-    shader->setUniform("frag_ScreenResolution", Vector2f(W,H));
-    shader->setUniform("frag_LightAttenuation", (float) 40);
-    RenderStates states; states.shader = shader;
+	Shader * shader = new Shader;
+	shader->loadFromFile("shader.frag", Shader::Fragment);
+	shader->setUniform("frag_ScreenResolution", Vector2f(W,H));
+	shader->setUniform("frag_LightAttenuation", (float) 100);
+	RenderStates states; states.shader = shader;
+
+	nullfield(field, W, H);
 
 	bool Game=1;
 
-    while (window.isOpen())
-    {
-        Event e;
-        while (window.pollEvent(e))
-        {
-            if (e.type == Event::Closed)
-                window.close();
+	while (window.isOpen())
+	{
+		Event e;
+		while (window.pollEvent(e))
+		{
+			if (e.type == Event::Closed)
+				window.close();
 		}
 
 		if (Keyboard::isKeyPressed(Keyboard::Left)) if (p1.dir!=2) p1.dir=1;
-	    if (Keyboard::isKeyPressed(Keyboard::Right)) if (p1.dir!=1)  p1.dir=2;
-	    if (Keyboard::isKeyPressed(Keyboard::Up)) if (p1.dir!=0) p1.dir=3;
+		if (Keyboard::isKeyPressed(Keyboard::Right)) if (p1.dir!=1)  p1.dir=2;
+		if (Keyboard::isKeyPressed(Keyboard::Up)) if (p1.dir!=0) p1.dir=3;
 		if (Keyboard::isKeyPressed(Keyboard::Down)) if (p1.dir!=3) p1.dir=0;
 
 		if (Keyboard::isKeyPressed(Keyboard::A)) if (p2.dir!=2) p2.dir=1;
-	    if (Keyboard::isKeyPressed(Keyboard::D)) if (p2.dir!=1)  p2.dir=2;
-	    if (Keyboard::isKeyPressed(Keyboard::W)) if (p2.dir!=0) p2.dir=3;
+		if (Keyboard::isKeyPressed(Keyboard::D)) if (p2.dir!=1)  p2.dir=2;
+		if (Keyboard::isKeyPressed(Keyboard::W)) if (p2.dir!=0) p2.dir=3;
 		if (Keyboard::isKeyPressed(Keyboard::S)) if (p2.dir!=3) p2.dir=0;
 
 		if (!Game)
 		{
+			if (Keyboard::isKeyPressed(Keyboard::R))
+			{
+				p1.reset();
+				p2.reset();
+				nullfield(field, W, H);
+
+				Game=1;
+
+				t.clear();
+				t.draw(sBackground);
+			}
+			
 			window.draw(text);
 			window.display();
 			continue;
@@ -114,11 +143,11 @@ int main()
 			t.draw(sprite, states);
 		}
 
-	   ////// draw  ///////
+		 ////// draw  ///////
 		window.clear();
 		window.draw(sprite);
- 		window.display();
+		window.display();
 	}
 
-    return 0;
+	return 0;
 }

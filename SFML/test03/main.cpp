@@ -26,7 +26,7 @@ Paddle pad1(-1, windowp);
 Paddle pad2(1, windowp);
 
 const int numpad = 2;
-const int numballs = 3;
+const int numballs = 300;
 
 
 Paddle * padlist[2] = {&pad1, &pad2};
