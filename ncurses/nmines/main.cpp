@@ -76,7 +76,6 @@ void generate_mines(intarrmem field, int amount, int curx, int cury, int width, 
 			arr[0]=x;arr[1]=y;
 		}
 		field.push(arr);
-		// delete arr
 	}
 }
 void generate_tiles(int ** tiles, intarrmem field, int width, int height)
@@ -87,10 +86,10 @@ void generate_tiles(int ** tiles, intarrmem field, int width, int height)
 	// +10 : flag
 	// +20 : opened
 	
-	for (int l=0;l<field.size;++l)
+	/*for (int l=0;l<field.size;++l)
 	{
 		tiles[field.buffer[l][0]+1][field.buffer[l][1]+1]=9;
-	}
+	}*/
 	
 	int x,y;
 	for (int i=0;i<field.size;++i)
@@ -123,7 +122,6 @@ void opentile(int ** tiles, int x, int y, int w, int h)
 	{
 		opentiles(tiles,x,y,w,h);
 	}
-
 }
 void opentiles(int ** tiles, int x, int y, int w, int h)
 {
@@ -171,6 +169,12 @@ void flagtile(int ** tiles, int x, int y)
 	if ((tiles[x][y]>=0)&&(tiles[x][y]<10)) tiles[x][y]+=10; // flag
 	else if ((tiles[x][y]>=10)&&(tiles[x][y]<20)) tiles[x][y]-=10; // unflag
 }
+void resettiles(int **& tiles, Values values)
+{
+	for (int i=0;i<values.boardwidth+2;++i)
+		for (int j=0;j<values.boardheight+2;++j)
+			tiles[i][j]=0; // set all tiles as 0
+}
 
 int main()
 {
@@ -213,8 +217,8 @@ int main()
 	init_pair(20, COLOR_WHITE, COLOR_YELLOW);
 	init_pair(200, COLOR_WHITE, COLOR_YELLOW);
 
-	// flag without cursor
-	init_pair(130, COLOR_RED, COLOR_BLACK);
+	init_pair(130, COLOR_RED, COLOR_BLACK); // flag without cursor
+	init_pair(131, COLOR_BLACK, COLOR_WHITE); // correct flags
 
 	noecho();
 	curs_set(0);
@@ -314,7 +318,16 @@ int main()
 		mvprintw(values.deltah-1,values.deltaw+values.boardwidth-strlen(s),s);
 		attron(COLOR_PAIR(130));
 		mvprintw(values.deltah-1,values.deltaw+1,"%d",values.mineamount-flags);
+
+		char s2[]="N-MINESWEEPER";
+		attron(COLOR_PAIR(102));
+		attron(A_BOLD);
+		attron(A_ITALIC);
+		mvprintw(values.deltah/2-1,(values.screenwidth-strlen(s2))/2,s2);
 		attron(COLOR_PAIR(100));
+		attroff(A_ITALIC);
+		attroff(A_BOLD);
+
 
 		refresh();
 
@@ -351,19 +364,29 @@ int main()
 					attron(COLOR_PAIR(10+10*((i==x)&&(j==y))));
 					mvprintw(values.deltah+j,values.deltaw+i," ");
 				}
+				else if ((tiles[i][j]>=10)&&(tiles[i][j]<19)) // fail flag
+				{
+					attron(COLOR_PAIR(9));
+					move(values.deltah+j,values.deltaw+i);
+					addstr("\u2691");
+				}
+				else if (tiles[i][j]==19){
+					attron(COLOR_PAIR(131));
+					move(values.deltah+j,values.deltaw+i);
+					addstr("\u2691");
+				}
 				attron(COLOR_PAIR(100));
 			}
 			
 			attron(A_BOLD);
-			mvprintw(values.deltah,values.deltaw+(values.boardwidth-strlen("FAIL"))/2,"FAIL");
+			mvprintw(values.deltah,values.deltaw+(values.boardwidth-strlen("FAIL"))/2+1,"FAIL");
 			attroff(A_BOLD);
 			refresh();
 
 			// stop user input
-			while (1) { getch(); }
-		}
+			while (1) {	ch=getch(); if (ch==114) { fail=false; firsttile=true; minefield.flush(); resettiles(tiles,values); x=values.boardwidth/2; y=values.boardheight/2; timeout(0); break; } } }
 
-		if ((goodflags==values.mineamount)&&(unopened==0)) while (1) { attron(A_BOLD); mvprintw(values.deltah,values.deltaw+(values.boardwidth-strlen("DONE"))/2,"DONE"); attroff(A_BOLD); refresh(); getch(); }
+		if ((goodflags==values.mineamount)&&(unopened==0)) while (1) { attron(A_BOLD); mvprintw(values.deltah,values.deltaw+(values.boardwidth-strlen("DONE"))/2+1,"DONE"); attroff(A_BOLD); refresh(); ch=getch(); if (ch==114) { firsttile=true; minefield.flush(); resettiles(tiles,values); x=values.boardwidth/2; y=values.boardheight/2; timeout(0); break; } }
 
 		ch=getch();
 		switch (ch)
@@ -372,9 +395,17 @@ int main()
 			case KEY_RIGHT: x++; break;
 			case KEY_UP: y--; break;
 			case KEY_DOWN: y++; break;
+			case 65+32: x--; break;
+			case 68+32: x++; break;
+			case 87+32: y--; break;
+			case 83+32: y++; break;
+			case 65: x-=2; break;
+			case 68: x+=2; break;
+			case 87: y-=2; break;
+			case 83: y+=2; break;
 			case 32:
 				// first tile must be empty
-				if (firsttile) { generate_mines(minefield,values.mineamount,x,y,values.boardwidth,values.boardheight); generate_tiles(tiles,minefield,values.boardwidth,values.boardheight); firsttile=false; }
+				if (firsttile) { generate_mines(minefield,values.mineamount,x-1,y-1,values.boardwidth,values.boardheight); generate_tiles(tiles,minefield,values.boardwidth,values.boardheight); firsttile=false; }
 				opentiles(tiles,x,y,values.boardwidth,values.boardheight);
 				break;
 			case 102: flagtile(tiles,x,y); break;

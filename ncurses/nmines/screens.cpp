@@ -8,17 +8,19 @@
 class Slider
 {
 public:
-	int x,y,w,h,min,max,amount;
+	int x,y,w,h,min,max,amount,tight=0;
 	int * value;
 	char * name;
-	Slider(const char * name, int x, int y, int w, int h, int min, int max, int amount, int * value) :
-		name((char *) name),x(x),y(y),w(w),h(h),min(min),max(max),amount(amount),value(value) {};
+	Slider(const char * name, int x, int y, int w, int h, int min, int max, int amount, int * value, int tight) :
+		name((char *) name),x(x),y(y),w(w),h(h),min(min),max(max),amount(amount),value(value), tight(tight) {}
 	void addval(int coefficient=1)
 	{
 		*value+=coefficient*amount;
 		if (*value<=min) *value=min;
 		if (*value>=max) *value=max;
 	}
+	void setmax() { *value=max; }
+	void setmin() { *value=min; }
 	void draw(bool bold=false)
 	{
 		if (bold) attron(A_BOLD);
@@ -32,13 +34,15 @@ public:
 		mvhline(y+h+1,x+1,ACS_HLINE,w);
 		mvvline(y+1,x,ACS_VLINE,h);
 		mvvline(y+1,x+w+1,ACS_VLINE,h);
+
+		char s[32];
 		
-		mvprintw(y-1,x,"%d",min);
-		mvprintw(y-1,x+w,"%d",max);
-		mvprintw(y-1,x+w/2,"%d",*value);
+		mvprintw(y-1+tight,x,"%d",min);
+		mvprintw(y-1+tight,x+w+2-sprintf(s,"%d",max),"%d",max);
+		mvprintw(y-1+tight,x+w/2,"%d",*value);
 
 		attron(COLOR_PAIR(10));
-		mvhline(y+1,x+1,' ',(int) *value*w/max);
+		mvhline(y+1,x+1,' ',(int) (*value-min)*w/(max-min));
 		attroff(COLOR_PAIR(10));
 
 		if (bold) attroff(A_BOLD);
@@ -47,22 +51,40 @@ public:
 
 void startmenu(Values &values)
 {
-	if (values.screenwidth>20) values.boardwidth=20;
-	else values.boardwidth=values.screenwidth;
-	if (values.screenheight>10) values.boardheight=10;
-	else values.boardheight=values.screenheight;
+	if (values.screenwidth>20+2) values.boardwidth=20;
+	else values.boardwidth=values.screenwidth-2;
+	if (values.screenheight>10+4) values.boardheight=10;
+	else values.boardheight=values.screenheight-4;
 
-	int selection=0;
-	int h=1,w=20,y=values.screenheight/2-h/2,x=values.screenwidth/2-w/2,ch;
-	Slider mineslider("MINES \%",x,y,w,h,0,100,2,new int(10));
-	Slider widthslider("WIDTH",x,y+5,w,h,2,values.screenwidth,1,new int(values.boardwidth));
-	Slider heightslider("HEIGHT",x,y+9,w,h,2,values.screenheight,1,new int(values.boardheight));
+	int selection=0,tight=0;
+	int h=1,w=20,x,y,ch,dh=0;
+	if (values.screenheight>22) // if screen is big enought
+		y=(values.screenheight-h)/2;
+	else // if screen is less than 22 rows
+	{
+		y=1; dh=1; tight=1;
+	}
+	if (values.screenwidth>22)
+		w=20;
+	else
+		w=values.screenwidth-2;
+	x=(values.screenwidth-w-1)/2;
+	Slider mineslider("MINES \%",x,y,w,h,0,100,2,new int(10),tight);
+	Slider widthslider("WIDTH",x,y+5-dh,w,h,6,values.screenwidth-2,1,new int(values.boardwidth),tight);
+	Slider heightslider("HEIGHT",x,y+9-dh,w,h,6,values.screenheight-4,1,new int(values.boardheight),tight);
 	Slider * sliderselection=&mineslider;
 
 	init_pair(221, COLOR_CYAN, COLOR_BLACK);
 	init_pair(222, COLOR_GREEN, COLOR_BLACK);
 	init_pair(223, COLOR_RED, COLOR_BLACK);
 	init_pair(224, COLOR_BLUE, COLOR_BLACK);
+
+	char title[4][84]={
+		"   / | / /     /  |/  /  _/ | / / ____/ ___/ |     / / ____/ ____/ __ \\/ ____/ __ \\",
+		"  /  |/ /_____/ /|_/ // //  |/ / __/  \\__ \\| | /| / / __/ / __/ / /_/ / __/ / /_/ /",
+		" / /|  /_____/ /  / // // /|  / /___ ___/ /| |/ |/ / /___/ /___/ ____/ /___/ _, _/",
+		"/_/ |_/     /_/  /_/___/_/ |_/_____//____/ |__/|__/_____/_____/_/   /_____/_/ |_|"
+	};
 
 	bool start=false;
 	while (!start)
@@ -95,6 +117,20 @@ void startmenu(Values &values)
 				widthslider.draw();
 				break;
 		}
+		attron(COLOR_PAIR(102));
+		if (values.screenwidth>83)
+			for (int i=0;i<4;++i)
+				mvprintw(i+values.screenheight/4-3,(values.screenwidth-83)/2,title[i]);
+		else
+		{
+			attron(A_BOLD);
+			attron(A_ITALIC);
+			mvprintw(values.screenheight/4-3,(values.screenwidth-13)/2,"N-MINESWEEPER");
+			attroff(A_ITALIC);
+			attroff(A_BOLD);
+		}
+		attron(COLOR_PAIR(100));
+
 		refresh();
 
 		ch=getch();
@@ -107,6 +143,8 @@ void startmenu(Values &values)
 		{
 			case KEY_RIGHT: sliderselection->addval(); break;
 			case KEY_LEFT: sliderselection->addval(-1); break;
+			case KEY_PPAGE: sliderselection->setmax(); break;
+			case KEY_NPAGE: sliderselection->setmin(); break;
 			case KEY_UP: selection--; break;
 			case KEY_DOWN: selection++; break;
 			case 32: start=true; break;
@@ -116,8 +154,8 @@ void startmenu(Values &values)
 	values.boardwidth=*widthslider.value;
 	values.boardheight=*heightslider.value;
 	values.mineamount=(values.boardheight*values.boardwidth)* *mineslider.value/100;
+	if (values.mineamount>values.boardheight*values.boardwidth-25) values.mineamount=values.boardheight*values.boardwidth-25;
 
-	values.deltaw=values.screenwidth/2-values.boardwidth/2;
-	values.deltah=values.screenheight/2-values.boardheight/2;
-
+	values.deltaw=(values.screenwidth-values.boardwidth)/2-1;
+	values.deltah=(values.screenheight-values.boardheight)/2;
 }
