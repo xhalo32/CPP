@@ -391,24 +391,18 @@ int main()
 		ch=getch();
 		switch (ch)
 		{
-			case KEY_LEFT: x--; break;
-			case KEY_RIGHT: x++; break;
-			case KEY_UP: y--; break;
-			case KEY_DOWN: y++; break;
-			case 65+32: x--; break;
-			case 68+32: x++; break;
-			case 87+32: y--; break;
-			case 83+32: y++; break;
+			case 97: case KEY_LEFT: x--; break;
+			case 100: case KEY_RIGHT: x++; break;
+			case 119: case KEY_UP: y--; break;
+			case 115: case KEY_DOWN: y++; break;
 			case 65: x-=2; break;
 			case 68: x+=2; break;
 			case 87: y-=2; break;
 			case 83: y+=2; break;
-			case 32:
-				// first tile must be empty
-				if (firsttile) { generate_mines(minefield,values.mineamount,x-1,y-1,values.boardwidth,values.boardheight); generate_tiles(tiles,minefield,values.boardwidth,values.boardheight); firsttile=false; }
+			case 32: if (firsttile) { generate_mines(minefield,values.mineamount,x-1,y-1,values.boardwidth,values.boardheight); generate_tiles(tiles,minefield,values.boardwidth,values.boardheight); firsttile=false; }
 				opentiles(tiles,x,y,values.boardwidth,values.boardheight);
 				break;
-			case 102: flagtile(tiles,x,y); break;
+			case 70: case 102: flagtile(tiles,x,y); break;
 		}
 		if (x<1)x=1;
 		if (x>values.boardwidth)x=values.boardwidth;

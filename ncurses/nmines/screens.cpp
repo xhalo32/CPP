@@ -62,12 +62,13 @@ void startmenu(Values &values)
 		y=(values.screenheight-h)/2;
 	else // if screen is less than 22 rows
 	{
-		y=1; dh=1; tight=1;
+		y=values.screenheight/2-5+dh; dh=1; tight=1;
 	}
 	if (values.screenwidth>22)
 		w=20;
 	else
 		w=values.screenwidth-2;
+
 	x=(values.screenwidth-w-1)/2;
 	Slider mineslider("MINES \%",x,y,w,h,0,100,2,new int(10),tight);
 	Slider widthslider("WIDTH",x,y+5-dh,w,h,6,values.screenwidth-2,1,new int(values.boardwidth),tight);
@@ -120,12 +121,12 @@ void startmenu(Values &values)
 		attron(COLOR_PAIR(102));
 		if (values.screenwidth>83)
 			for (int i=0;i<4;++i)
-				mvprintw(i+values.screenheight/4-3,(values.screenwidth-83)/2,title[i]);
+				mvprintw(y/2-2+i,(values.screenwidth-83)/2,title[i]);
 		else
 		{
 			attron(A_BOLD);
 			attron(A_ITALIC);
-			mvprintw(values.screenheight/4-3,(values.screenwidth-13)/2,"N-MINESWEEPER");
+			mvprintw(y/2,(values.screenwidth-13)/2,"N-MINESWEEPER");
 			attroff(A_ITALIC);
 			attroff(A_BOLD);
 		}
