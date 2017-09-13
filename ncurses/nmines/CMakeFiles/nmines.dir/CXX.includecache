@@ -35,6 +35,8 @@ ncurses.h
 -
 string.h
 -
+iostream
+-
 
 /home/niklas/CPP/ncurses/nmines/screens.h
 gamevalues.h
