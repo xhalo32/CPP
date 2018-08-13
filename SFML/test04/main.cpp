@@ -1,6 +1,5 @@
 #include <time.h>
 
-#define _USE_MATH_DEINES
 #include <math.h>
 #include <sstream>
 #include <iostream>

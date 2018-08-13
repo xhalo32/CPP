@@ -1,0 +1,44 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/niklash/mount/CPP/ncurses/nmines/gamevalues.h
+
+/home/niklash/mount/CPP/ncurses/nmines/main.cpp
+ncurses.h
+-
+unistd.h
+-
+chrono
+-
+iostream
+-
+cstdlib
+-
+locale.h
+-
+string.h
+-
+gamevalues.h
+/home/niklash/mount/CPP/ncurses/nmines/gamevalues.h
+screens.h
+/home/niklash/mount/CPP/ncurses/nmines/screens.h
+
+/home/niklash/mount/CPP/ncurses/nmines/screens.cpp
+gamevalues.h
+/home/niklash/mount/CPP/ncurses/nmines/gamevalues.h
+ncurses.h
+-
+string.h
+-
+iostream
+-
+
+/home/niklash/mount/CPP/ncurses/nmines/screens.h
+gamevalues.h
+/home/niklash/mount/CPP/ncurses/nmines/gamevalues.h
+

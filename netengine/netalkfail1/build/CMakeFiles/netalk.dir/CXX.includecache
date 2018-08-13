@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/niklas/CPP/netengine/netalk/client.cpp
+SFML/Network.hpp
+-
+iostream
+-
+stdio.h
+-
+string.h
+-
+
+/home/niklas/CPP/netengine/netalk/client.h
+
+/home/niklas/CPP/netengine/netalk/netalk.cpp
+server.h
+/home/niklas/CPP/netengine/netalk/server.h
+client.h
+/home/niklas/CPP/netengine/netalk/client.h
+iostream
+-
+
+/home/niklas/CPP/netengine/netalk/server.cpp
+SFML/Network.hpp
+-
+iostream
+-
+stdio.h
+-
+string.h
+-
+
+/home/niklas/CPP/netengine/netalk/server.h
+

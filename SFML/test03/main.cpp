@@ -16,7 +16,7 @@ using namespace std;
 #include "ball.cpp"
 
 
-const int width = 600, height = 400;
+const int width = 1600, height = 900;
 
 
 RenderWindow window(VideoMode(width,height), "Ping Pong");
@@ -26,7 +26,7 @@ Paddle pad1(-1, windowp);
 Paddle pad2(1, windowp);
 
 const int numpad = 2;
-const int numballs = 300;
+const int numballs = 30;
 
 
 Paddle * padlist[2] = {&pad1, &pad2};

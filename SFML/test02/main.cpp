@@ -232,8 +232,11 @@ int main(  )
 		{ 
 			window.clear( Color( 232, 232, 232 ) );
 
-			int pos[] = { size*apple.x + 2,size*apple.y + 2 }, wh[] = { size - 4,size - 4 }, color[] = { 225,0,0 };
-			window.draw( draw_rect( pos, wh, color ) );
+			int pos[]={0,0}, wh[]={size*M,size*N}, color[]={200,200,200};
+			window.draw(draw_rect(pos,wh,color));
+
+			int pos2[] = { size*apple.x + 2,size*apple.y + 2 }, wh2[] = { size - 4,size - 4 }, color2[] = { 225,0,0 };
+			window.draw( draw_rect( pos2, wh2, color2 ) );
 
 
 			for ( unsigned int i=0; i<max_snake; i++ )

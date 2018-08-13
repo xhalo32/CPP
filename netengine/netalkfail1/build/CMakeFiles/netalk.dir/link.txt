@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/netalk.dir/netalk.cpp.o CMakeFiles/netalk.dir/client.cpp.o CMakeFiles/netalk.dir/server.cpp.o  -o netalk -lsfml-network -lsfml-system 

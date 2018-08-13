@@ -1,0 +1,3 @@
+/home/niklash/mount/CPP/ncurses/nmines/build/CMakeFiles/rebuild_cache.dir
+/home/niklash/mount/CPP/ncurses/nmines/build/CMakeFiles/nmines.dir
+/home/niklash/mount/CPP/ncurses/nmines/build/CMakeFiles/edit_cache.dir

@@ -1,0 +1,13 @@
+cmake and ncurses.h required!
+
+make build directory:
+	mkdir build
+
+go to build directory
+	cd build
+
+create makefiles
+	cmake ..
+
+compile!
+	make
